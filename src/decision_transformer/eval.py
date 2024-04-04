@@ -107,12 +107,14 @@ def evaluate_dt_agent(
         )
 
         # add new reward to init reward
+        rtg = rtg.cpu()     # added
         new_rtg = rtg[:, -1:, :] - new_reward[None, :, None]
         rtg = t.cat([rtg, new_rtg], dim=1)
 
         # add new timesteps
         # if we are done, we don't want to increment the timestep,
         # so we use the not operator to flip the done bit
+        timesteps = timesteps.cpu()     # added
         new_timestep = timesteps[:, -1:, :] + np.invert(dones)[:, None, None]
         timesteps = t.cat([timesteps, new_timestep], dim=1)
 
@@ -129,6 +131,10 @@ def evaluate_dt_agent(
         actions = actions[:, -(max_len - 1) :] if max_len > 1 else None
         timesteps = timesteps[:, -max_len:]
         rtg = rtg[:, -max_len:]
+
+        # added
+        rtg = rtg.cuda()
+        timesteps = timesteps.cuda()
 
         if isinstance(model, DecisionTransformer):
             state_preds, action_preds, reward_preds = model.forward(

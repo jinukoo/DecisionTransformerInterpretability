@@ -168,7 +168,7 @@ def store_transformer_model(path, model, offline_config):
 
 
 def set_device(run_config):
-    if run_config.device == t.device("cuda"):
+    if run_config.device == t.device("cuda").type:
         if t.cuda.is_available():
             device = t.device("cuda")
         else:
