@@ -18,6 +18,7 @@ from src.environments.registration import register_envs
 from src.models.trajectory_transformer import (
     CloneTransformer,
     DecisionTransformer,
+    DT,
 )
 
 # from .model import DecisionTransformer
@@ -111,6 +112,10 @@ def run_decision_transformer(
             environment_config=environment_config,
             transformer_config=transformer_config,
         )
+        dtmodel = DT(
+            environment_config=environment_config,
+            transformer_config=transformer_config,
+        )
     else:
         model = CloneTransformer(
             environment_config=environment_config,
@@ -118,7 +123,7 @@ def run_decision_transformer(
         )
 
     model = train(
-        model=model,
+        model=dtmodel,
         trajectory_data_set=trajectory_data_set,
         env=env,
         make_env=make_env,
@@ -144,7 +149,7 @@ def run_decision_transformer(
         artifact = wandb.Artifact(run_name, type="model")
         artifact.add_file(model_path)
         wandb.log_artifact(artifact)
-        os.remove(model_path)
+        # os.remove(model_path)
 
         wandb.finish()
 

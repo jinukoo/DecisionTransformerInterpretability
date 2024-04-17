@@ -13,6 +13,7 @@ from src.models.trajectory_transformer import (
     CloneTransformer,
     DecisionTransformer,
     TrajectoryTransformer,
+    DT,
 )
 
 from .utils import get_max_len_from_model_type, initialize_padding_inputs
@@ -58,9 +59,9 @@ def evaluate_dt_agent(
         os.makedirs(video_path)
 
     videos = [i for i in os.listdir(video_path) if i.endswith(".mp4")]
-    for video in videos:
-        os.remove(os.path.join(video_path, video))
-    videos = [i for i in os.listdir(video_path) if i.endswith(".mp4")]
+    #for video in videos:
+    #    os.remove(os.path.join(video_path, video))
+    #videos = [i for i in os.listdir(video_path) if i.endswith(".mp4")]
 
     if use_tqdm:
         pbar = tqdm(range(trajectories), desc="Evaluating DT")
@@ -93,6 +94,10 @@ def evaluate_dt_agent(
     elif isinstance(model, CloneTransformer):
         _, action_preds = model.forward(
             states=obs, actions=actions, timesteps=timesteps
+        )
+    elif isinstance(model, DT):
+        _, action_preds, _ = model.forward(
+            states=obs, actions=actions, returns_to_go=rtg, timesteps=timesteps
         )
     else:
         raise ValueError("Model type not supported")
@@ -143,6 +148,10 @@ def evaluate_dt_agent(
         elif isinstance(model, CloneTransformer):
             state_preds, action_preds = model.forward(
                 states=obs, actions=actions, timesteps=timesteps
+            )
+        elif isinstance(model, DT):
+            state_preds, action_preds, reward_preds = model.forward(
+                states=obs, actions=actions, returns_to_go=rtg, timesteps=timesteps
             )
         else:
             raise NotImplementedError(

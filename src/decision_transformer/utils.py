@@ -17,7 +17,7 @@ from src.models.trajectory_transformer import (
 from src.patch_transformer_lens.hooked_transformer_methods import (
     fold_layer_norm,
 )
-
+from transformers.modeling_utils import Conv1D
 
 def parse_args():
     parser = argparse.ArgumentParser(
@@ -355,6 +355,7 @@ def get_optim_groups(model, offline_config):
     no_decay = set()
     whitelist_weight_modules = (
         torch.nn.Linear,
+        Conv1D,
     )  # not going to work trivially for HookedTransformer
     blacklist_weight_modules = (
         torch.nn.LayerNorm,

@@ -13,6 +13,7 @@ from src.models.trajectory_transformer import (
     CloneTransformer,
     DecisionTransformer,
     TrajectoryTransformer,
+    DT,
 )
 
 from .offline_dataset import TrajectoryDataset
@@ -80,6 +81,15 @@ def train(
                     actions=a[:, :-1].unsqueeze(-1)
                     if a.shape[1] > 1
                     else None,
+                    timesteps=ti.unsqueeze(-1),
+                )
+            elif isinstance(model, DT):
+                action = a[:, :-1].unsqueeze(-1) if a.shape[1] > 1 else None
+                _, action_preds, _ = model(
+                    states=s,
+                    # remove last action
+                    actions=action,
+                    returns_to_go=rtg,  # remove last rtg
                     timesteps=ti.unsqueeze(-1),
                 )
 
@@ -206,6 +216,15 @@ def test(
                     actions=a[:, :-1].unsqueeze(-1)
                     if a.shape[1] > 1
                     else None,
+                    timesteps=ti.unsqueeze(-1),
+                )
+            elif isinstance(model, DT):
+                action = a[:, :-1].unsqueeze(-1) if a.shape[1] > 1 else None
+                _, action_preds, _ = model(
+                    states=s,
+                    # remove last action
+                    actions=action,
+                    returns_to_go=rtg,  # remove last rtg
                     timesteps=ti.unsqueeze(-1),
                 )
 
